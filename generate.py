@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 """
 Pipeline newsletter mensuel — Cabinet Laurent Valère
-Fetch biens.json → génère HTML → archive sur serveur → envoie par email (Resend)
-Cron : 0 7 1 * * /opt/newsletter-clv-mensuelle/run.sh
+Fetch biens/articles/avis (repo privé cabinetlaurentvalere) → génère HTML (charte août 2026)
+→ archive → envoie un brouillon par email (Resend) pour relecture avant chargement dans Listmonk.
+Cron : 0 7 1 * * (GitHub Actions, voir .github/workflows/newsletter-mensuelle.yml)
 """
 
 import base64
 import json
 import os
+import re
 import urllib.parse
 import urllib.request
 from datetime import datetime
@@ -17,14 +19,15 @@ import jinja2
 import resend
 
 # ── Config ────────────────────────────────────────────────────────────────────
-BIENS_JSON_URL = (
-    "https://raw.githubusercontent.com/arnov8/cabinetlaurentvalere/main/data/biens.json"
-)
+DATA_REPO = "arnov8/cabinetlaurentvalere"
+CABINETLV_DATA_TOKEN = os.environ.get("CABINETLV_DATA_TOKEN", "")
 SITE_BASE = "https://www.cabinetlaurentvalere.com"
 ARCHIVE_PATH = Path(os.environ.get("ARCHIVE_PATH", "/srv/newsletters"))
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 EMAIL_TO = os.environ.get("EMAIL_TO", "valere.arnaud@gmail.com")
 EMAIL_FROM = os.environ.get("EMAIL_FROM", "contact@cabinetlaurentvalere.com")
+
+MAX_PER_SECTION = 3  # nombre de biens "normaux" affichés par section (hors carte coup de cœur)
 
 MOIS_FR = {
     1: "janvier", 2: "février", 3: "mars", 4: "avril",
@@ -58,33 +61,59 @@ COMMUNE_DISPLAY = {
 }
 
 LABEL_DISPLAY = {
-    "nouveau": "🔥 Nouveau",
-    "coup-de-coeur": "❤️ Coup de cœur",
-    "vue-mer": "🌊 Vue mer",
-    "piscine": "🏊 Piscine",
-    "neuf": "✨ Neuf",
-    "prestige": "💎 Prestige",
-    "architecte": "✨ Architecte",
-    "lumineux": "☀️ Lumineux",
-    "rare": "💎 Rare",
-    "investissement": "📈 Invest.",
+    "nouveau": "Nouveau",
+    "coup-de-coeur": "Coup de cœur",
+    "vue-mer": "Vue mer",
+    "piscine": "Piscine",
+    "neuf": "Neuf",
+    "prestige": "Prestige",
+    "architecte": "Architecte",
+    "lumineux": "Lumineux",
+    "rare": "Rare",
+    "investissement": "Investissement",
 }
 
 TYPE_DISPLAY = {
-    "appartement": "🏘️ Appartement",
-    "villa": "🏡 Villa",
-    "terrain": "🌿 Terrain",
-    "immeuble": "🏢 Immeuble",
-    "local": "🏪 Local",
+    "appartement": "Appartement",
+    "villa": "Villa",
+    "terrain": "Terrain",
+    "immeuble": "Immeuble",
+    "local": "Local",
 }
 
+CATEGORIE_ARTICLE_DISPLAY = {
+    "prix": "Analyse du marché",
+    "conseils": "Conseils",
+    "financement": "Financement",
+    "vente": "Vente",
+    "succession": "Succession",
+    "fiscalite": "Fiscalité",
+    "urbanisme": "Urbanisme",
+    "notaire": "Notaire",
+    "estimation": "Estimation",
+    "promesse": "Promesse de vente",
+}
 
-# ── Helpers exposés au template ───────────────────────────────────────────────
-def get_badge(bien: dict) -> str:
+APPARTEMENT_TYPES = {"appartement"}
+VILLA_TYPES = {"villa", "terrain", "immeuble", "local"}
+
+
+# ── Fetch données (repo privé) ─────────────────────────────────────────────────
+def fetch_data_json(path: str):
+    url = f"https://raw.githubusercontent.com/{DATA_REPO}/main/{path}"
+    req = urllib.request.Request(url)
+    if CABINETLV_DATA_TOKEN:
+        req.add_header("Authorization", f"token {CABINETLV_DATA_TOKEN}")
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return json.loads(resp.read())
+
+
+# ── Helpers biens ────────────────────────────────────────────────────────────
+def get_badge_text(bien: dict) -> str:
     for lbl in bien.get("labels", []):
         if lbl in LABEL_DISPLAY:
             return LABEL_DISPLAY[lbl]
-    return TYPE_DISPLAY.get(bien.get("type", ""), "🏠 Bien")
+    return TYPE_DISPLAY.get(bien.get("type", ""), "Bien")
 
 
 def get_image_url(bien: dict) -> str:
@@ -95,8 +124,10 @@ def get_image_url(bien: dict) -> str:
 
 def get_prix_display(bien: dict) -> str:
     prix = int(bien.get("prix", 0))
-    # Séparateur milliers : espace fine insécable + signe euro insécable
-    return f"{prix:,}".replace(",", " ") + " €"
+    display = f"{prix:,}".replace(",", " ") + " €"
+    if bien.get("prixLabel"):
+        display += f" {bien['prixLabel']}"
+    return display
 
 
 def get_commune_display(bien: dict) -> str:
@@ -109,20 +140,20 @@ def get_commune_display(bien: dict) -> str:
 def get_surface_line(bien: dict) -> str:
     parts = []
     if s := bien.get("surfaceHabitable"):
-        parts.append(f"{s} m²")
+        parts.append(f"{s} m²")
     if ch := bien.get("chambres"):
-        parts.append(f"{ch} ch.")
+        parts.append(f"{ch} ch.")
     if (sdb := bien.get("sallesEau")) and sdb > 1:
-        parts.append(f"{sdb} SDB")
+        parts.append(f"{sdb} SDB")
     if st := bien.get("surfaceTerrain"):
-        parts.append(f"{st:,} m² terrain".replace(",", " "))
+        parts.append(f"{st:,} m² terrain".replace(",", " "))
     if "piscine" in bien.get("caracteristiques", []):
         parts.append("Piscine")
     return " · ".join(parts)
 
 
 def get_wa_url(bien: dict) -> str:
-    titre = bien.get("titre", "Bien")[:40]
+    titre = get_titre_display(bien)[:40]
     prix = int(bien.get("prix", 0))
     msg = urllib.parse.quote(f"Bonjour, {titre} {prix} EUR")
     return f"https://wa.me/596696334700?text={msg}"
@@ -141,37 +172,101 @@ def get_short_desc(bien: dict) -> str:
     desc = bien.get("description", "").strip()
     if not desc:
         return ""
-    if len(desc) <= 320:
-        return desc
-    chunk = desc[:320]
+    paragraph = desc.split("\n\n")[0].strip()
+    if len(paragraph) <= 280:
+        return paragraph
+    chunk = paragraph[:280]
     cut = chunk.rfind(". ")
-    if cut > 150:
+    if cut > 120:
         return chunk[: cut + 1]
     return chunk[: chunk.rfind(" ")] + "…"
 
 
 def get_titre_display(bien: dict) -> str:
     titre = bien.get("titre", "")
-    # Convertit les titres tout-caps en title case
-    return titre.title() if titre and titre == titre.upper() else titre
+    if not titre or titre != titre.upper():
+        return titre
+    display = titre.title()
+    # "3ÈME" -> title() -> "3Ème" (une majuscule après un chiffre) : on corrige les ordinaux (3ème, 1er…)
+    return re.sub(r"(\d)([A-ZÀ-Ÿ])", lambda m: m.group(1) + m.group(2).lower(), display)
 
 
-# ── Catégorisation ────────────────────────────────────────────────────────────
-def categorize(biens: list) -> tuple:
+# ── Catégorisation biens + sélection de la carte "coup de cœur" ───────────────
+def build_cards(biens: list) -> tuple:
     actifs = [b for b in biens if b.get("statut") == "a-vendre"]
-    opportunites = sorted(
-        [b for b in actifs if b.get("prix", 0) < 350_000],
-        key=lambda x: x.get("prix", 0),
-    )
+
+    highlight = next((b for b in actifs if "coup-de-coeur" in b.get("labels", [])), None)
+    reste = [b for b in actifs if b is not highlight]
+
+    appartements = sorted(
+        [b for b in reste if b.get("type") in APPARTEMENT_TYPES],
+        key=lambda b: b.get("prix", 0),
+    )[:MAX_PER_SECTION]
     villas = sorted(
-        [b for b in actifs if 350_000 <= b.get("prix", 0) < 600_000],
-        key=lambda x: x.get("prix", 0),
+        [b for b in reste if b.get("type") in VILLA_TYPES],
+        key=lambda b: b.get("prix", 0),
+    )[:MAX_PER_SECTION]
+
+    num = 0
+    appartement_cards = []
+    for b in appartements:
+        num += 1
+        appartement_cards.append({"bien": b, "num": num, "highlight": False})
+    if highlight and highlight.get("type") in APPARTEMENT_TYPES:
+        num += 1
+        appartement_cards.append({"bien": highlight, "num": num, "highlight": True})
+
+    villa_cards = []
+    for b in villas:
+        num += 1
+        villa_cards.append({"bien": b, "num": num, "highlight": False})
+    if highlight and highlight.get("type") in VILLA_TYPES:
+        num += 1
+        villa_cards.append({"bien": highlight, "num": num, "highlight": True})
+
+    return appartement_cards, villa_cards
+
+
+# ── Article de blog (change chaque mois selon le dernier article publié) ──────
+def strip_markdown_bold(text: str) -> str:
+    return text.replace("**", "")
+
+
+def select_article(articles: list, campaign: str):
+    publies = [a for a in articles if a.get("datePublication") and a.get("contenu")]
+    if not publies:
+        return None
+    article = max(publies, key=lambda a: a["datePublication"])
+    contenu = strip_markdown_bold(article["contenu"].split("\n\n")[0].strip())
+    excerpt = contenu if len(contenu) <= 320 else contenu[:320].rsplit(" ", 1)[0] + "…"
+    image_path = article.get("image", "")
+    image_url = image_path if image_path.startswith("http") else SITE_BASE + image_path
+    url = (
+        f"{SITE_BASE}/infos-conseils/{article['slug']}"
+        f"?utm_source=newsletter&utm_medium=email&utm_campaign={campaign}&utm_content=card-blog"
     )
-    prestige = sorted(
-        [b for b in actifs if b.get("prix", 0) >= 600_000],
-        key=lambda x: x.get("prix", 0),
-    )
-    return opportunites, villas, prestige
+    return {
+        "titre": article["titre"],
+        "categorie": CATEGORIE_ARTICLE_DISPLAY.get(article.get("categorie"), "Conseils"),
+        "excerpt": excerpt,
+        "temps_lecture": article.get("tempsLecture"),
+        "image_url": image_url,
+        "url": url,
+    }
+
+
+# ── Avis Google (déjà triés du plus récent au plus ancien) ────────────────────
+def select_avis(avis_data: dict) -> dict:
+    avis_liste = avis_data.get("avis", [])[:3]
+    for a in avis_liste:
+        a["initiale"] = (a.get("nom") or "?").strip()[0].upper()
+    note_globale = avis_data.get("note_globale", 4.8)
+    return {
+        "liste": avis_liste,
+        "note_globale": f"{note_globale:.1f}".replace(".", ","),
+        "nombre_avis": avis_data.get("nombre_avis", len(avis_data.get("avis", []))),
+        "lien_google": avis_data.get("lien_google", "https://www.google.fr/maps/place/Cabinet+Laurent+Val%C3%A8re/"),
+    }
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -185,18 +280,30 @@ def main():
 
     print(f"[{now:%Y-%m-%d %H:%M}] Génération newsletter {mois_cap} {year}")
 
-    with urllib.request.urlopen(BIENS_JSON_URL, timeout=30) as resp:
-        raw = json.loads(resp.read())
-    biens_list = raw.get("biens", raw) if isinstance(raw, dict) else raw
+    biens_raw = fetch_data_json("data/biens.json")
+    biens_list = biens_raw.get("biens", biens_raw) if isinstance(biens_raw, dict) else biens_raw
+    articles_raw = fetch_data_json("data/articles.json")
+    articles_list = articles_raw.get("articles", articles_raw) if isinstance(articles_raw, dict) else articles_raw
+    avis_raw = fetch_data_json("data/avis-google.json")
 
-    opportunites, villas, prestige = categorize(biens_list)
-    total = len(opportunites) + len(villas) + len(prestige)
-    print(f"  → {len(opportunites)} opportunités | {len(villas)} villas | {len(prestige)} prestige ({total} biens)")
+    appartement_cards, villa_cards = build_cards(biens_list)
+    total = len(appartement_cards) + len(villa_cards)
+    print(f"  → {len(appartement_cards)} appartements | {len(villa_cards)} villas/investissements ({total} biens)")
 
-    sample = (opportunites + villas + prestige)[:3]
+    article = select_article(articles_list, campaign)
+    if article:
+        print(f"  → Article : {article['titre']}")
+
+    avis = select_avis(avis_raw)
+
+    all_cards = appartement_cards + villa_cards
+    sample = [c["bien"] for c in all_cards][:3]
     preheader = " · ".join(
         f"{get_titre_display(b)[:25]} {get_prix_display(b)}" for b in sample
     ) + f" — {total} biens sélectionnés ce mois-ci."
+
+    prix_min = min((c["bien"].get("prix", 0) for c in all_cards), default=0)
+    prix_min_display = f"{int(prix_min // 1000)} k€" if prix_min else "—"
 
     # Rendu Jinja2
     tpl_dir = Path(__file__).parent
@@ -209,7 +316,7 @@ def main():
     env.globals.update(
         get_image_url=get_image_url,
         get_prix_display=get_prix_display,
-        get_badge=get_badge,
+        get_badge_text=get_badge_text,
         get_commune_display=get_commune_display,
         get_surface_line=get_surface_line,
         get_wa_url=get_wa_url,
@@ -224,9 +331,11 @@ def main():
         year=year,
         campaign=campaign,
         preheader=preheader,
-        opportunites=opportunites,
-        villas=villas,
-        prestige=prestige,
+        appartement_cards=appartement_cards,
+        villa_cards=villa_cards,
+        article=article,
+        avis=avis,
+        prix_min_display=prix_min_display,
     )
 
     # Archive locale
@@ -252,10 +361,10 @@ def main():
 <p>Le draft de la newsletter <strong>{mois_cap} {year}</strong> est prêt.</p>
 <p><strong>{total} biens</strong> sélectionnés automatiquement :</p>
 <ul>
-  <li>{len(opportunites)} opportunité(s) — moins de 350&nbsp;000&nbsp;€</li>
-  <li>{len(villas)} villa(s) — 350&nbsp;000&nbsp;€ → 600&nbsp;000&nbsp;€</li>
-  <li>{len(prestige)} prestige — plus de 600&nbsp;000&nbsp;€</li>
+  <li>{len(appartement_cards)} appartement(s)</li>
+  <li>{len(villa_cards)} villa(s) / investissement(s)</li>
 </ul>
+<p>Article mis en avant : {article['titre'] if article else '—'}</p>
 <p>Le fichier HTML est en pièce jointe. Ouvre-le dans ton navigateur pour vérifier, modifie si besoin, puis charge dans Listmonk pour l'envoi.</p>
 <p style="color:#999;font-size:12px;">Archive : {filepath}</p>
 """,

@@ -1,0 +1,32 @@
+name: Newsletter mensuelle CLV
+
+on:
+  schedule:
+    - cron: "0 7 1 * *"  # 1er de chaque mois, 07h00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - run: python3 generate.py
+        env:
+          CABINETLV_DATA_TOKEN: ${{ secrets.CABINETLV_DATA_TOKEN }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          ARCHIVE_PATH: ${{ github.workspace }}/archive
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: newsletter-html
+          path: archive/**/*.html
+          retention-days: 90

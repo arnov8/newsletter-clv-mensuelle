@@ -1,383 +1,318 @@
-{% macro card_bien(bien, campaign, style) %}
-{% if style == 'opportunite' %}
-  {% set card_bg = "linear-gradient(145deg, #0d9488, #0f766e)" %}
-  {% set card_shadow = "0 8px 32px rgba(13,148,136,0.25)" %}
-  {% set title_color = "#ffffff" %}
-  {% set price_color = "#1a1a2e" %}
-  {% set sub_color = "rgba(255,255,255,0.8)" %}
-  {% set desc_color = "rgba(255,255,255,0.95)" %}
-  {% set badge_bg = "rgba(255,255,255,0.2)" %}
-  {% set badge_color = "#ffffff" %}
-  {% set btn_disc_bg = "#ffffff" %}
-  {% set btn_disc_color = "#0f766e" %}
-  {% set btn_call_color = "#ffffff" %}
-  {% set btn_call_border = "rgba(255,255,255,0.5)" %}
-{% elif style == 'villa' %}
-  {% set card_bg = "linear-gradient(145deg, #256CB8, #1a5490)" %}
-  {% set card_shadow = "0 8px 32px rgba(37,108,184,0.25)" %}
-  {% set title_color = "#ffffff" %}
-  {% set price_color = "#fbbf24" %}
-  {% set sub_color = "rgba(255,255,255,0.7)" %}
-  {% set desc_color = "rgba(255,255,255,0.9)" %}
-  {% set badge_bg = "rgba(255,255,255,0.2)" %}
-  {% set badge_color = "#ffffff" %}
-  {% set btn_disc_bg = "#ffffff" %}
-  {% set btn_disc_color = "#256CB8" %}
-  {% set btn_call_color = "#ffffff" %}
-  {% set btn_call_border = "rgba(255,255,255,0.5)" %}
+{% macro card_bien(card, accent) %}
+{% set bien = card.bien %}
+{% if accent == 'gold' %}
+  {% set accent_color = "#C89A32" %}
+  {% set desc_bg = "#faf5ea" %}
 {% else %}
-  {% set card_bg = "linear-gradient(145deg, #EDD49A, #C89A32)" %}
-  {% set card_shadow = "0 8px 32px rgba(200,154,50,0.3)" %}
-  {% set title_color = "#3D2800" %}
-  {% set price_color = "#3D2800" %}
-  {% set sub_color = "rgba(61,40,0,0.7)" %}
-  {% set desc_color = "rgba(61,40,0,0.85)" %}
-  {% set badge_bg = "rgba(61,40,0,0.12)" %}
-  {% set badge_color = "#3D2800" %}
-  {% set btn_disc_bg = "#3D2800" %}
-  {% set btn_disc_color = "#EDD49A" %}
-  {% set btn_call_color = "#3D2800" %}
-  {% set btn_call_border = "rgba(61,40,0,0.4)" %}
+  {% set accent_color = "#0d9488" %}
+  {% set desc_bg = "#f0f9f7" %}
 {% endif %}
-<tr><td class="sec" style="padding:0 28px 24px;">
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="bento-card" style="border-radius:28px; overflow:hidden; background:{{ card_bg }}; box-shadow:{{ card_shadow }};">
-        <tr><td>
-            <a href="{{ get_bien_url(bien, campaign, 'photo') }}">
-                <img src="{{ get_image_url(bien) }}" alt="{{ get_titre_display(bien) }} - {{ get_prix_display(bien) }}" width="584" class="card-img" style="width:100%; height:300px; object-fit:cover; display:block;">
-            </a>
-        </td></tr>
-        <tr><td class="card-body" style="padding:20px 24px;">
-            <span style="display:inline-block; padding:6px 14px; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; border-radius:50px; background:{{ badge_bg }}; color:{{ badge_color }}; margin-bottom:10px;">{{ get_badge(bien) }}</span>
-            <h2 class="prop-title" style="font-size:24px; font-weight:700; color:{{ title_color }}; margin:0 0 6px; line-height:1.2;">
-                {{ get_titre_display(bien) | truncate(48, True, '…') }} <span class="price-break" style="color:{{ price_color }};">{{ get_prix_display(bien) }}</span>
-            </h2>
-            <p style="font-size:13px; color:{{ sub_color }}; margin:0 0 10px; font-weight:500;">&#128205; {{ get_commune_display(bien) }}{% if get_surface_line(bien) %} &#183; {{ get_surface_line(bien) }}{% endif %}</p>
-            <p style="font-size:15px; color:{{ desc_color }}; margin:0 0 16px; line-height:1.55;">{{ get_short_desc(bien) }}</p>
-            <table role="presentation" cellspacing="0" cellpadding="0" width="100%" class="btn-row"><tr>
-                <td style="padding-right:8px;"><a href="{{ get_bien_url(bien, campaign, 'cta') }}" class="cta-btn" style="display:inline-block; padding:14px 24px; font-size:14px; font-weight:600; border-radius:50px; background:{{ btn_disc_bg }}; color:{{ btn_disc_color }}; white-space:nowrap; text-decoration:none;">D&#233;couvrir</a></td>
-                <td style="padding-right:8px;"><a href="tel:+596696334700" class="cta-btn" style="display:inline-block; padding:14px 24px; font-size:14px; font-weight:600; border-radius:50px; background:transparent; color:{{ btn_call_color }}; border:1.5px solid {{ btn_call_border }}; white-space:nowrap; text-decoration:none;">Appeler</a></td>
-                <td><a href="{{ get_wa_url(bien) }}" class="cta-btn" style="display:inline-block; padding:14px 18px; font-size:14px; font-weight:600; border-radius:50px; background:#25D366; color:#ffffff; white-space:nowrap; text-decoration:none;">WhatsApp</a></td>
-            </tr></table>
-        </td></tr>
-    </table>
+<tr><td class="sec" style="padding:0 40px 34px;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+    <tr><td style="padding-bottom:16px;">
+      <a href="{{ get_bien_url(bien, campaign, 'photo') }}"><img src="{{ get_image_url(bien) }}" alt="{{ get_titre_display(bien) }}" width="560" class="ed-img" style="width:100%; height:300px; object-fit:cover; display:block; border-radius:6px;"></a>
+    </td></tr>
+    <tr><td>
+      <p style="margin:0 0 8px; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:{{ accent_color }}; font-weight:700;"><span style="color:#c7ccd4;">N°{{ '%02d'|format(card.num) }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ get_badge_text(bien) }}</p>
+      <h3 class="prop-title" style="margin:0 0 10px; font-size:23px; font-weight:800; color:#1a1a2e; line-height:1.22; letter-spacing:-0.3px;">{{ get_titre_display(bien) }}</h3>
+      <p class="prop-meta" style="margin:0 0 12px; font-size:13px; color:#8a93a3; font-weight:500;">{{ get_commune_display(bien) }}{% if get_surface_line(bien) %} · {{ get_surface_line(bien) }}{% endif %}</p>
+      <p class="prop-desc" style="margin:0 0 18px; font-size:15px; color:#4a5568; line-height:1.65; background:{{ desc_bg }}; padding:14px 16px; border-radius:10px;">{{ get_short_desc(bien) }}</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td valign="middle" class="price-cell"><span class="prop-price" style="font-size:26px; font-weight:800; color:{{ accent_color }}; letter-spacing:-0.5px;">{{ get_prix_display(bien) }}</span></td>
+        <td valign="middle" align="right" class="ed-links">
+          <a href="{{ get_bien_url(bien, campaign, 'cta') }}" style="display:inline-block; font-size:14px; font-weight:700; color:{{ accent_color }}; text-decoration:none; padding:9px 18px; border:1.5px solid {{ accent_color }}; border-radius:50px;">Découvrir&nbsp;→</a>
+          <a href="{{ get_wa_url(bien) }}" style="display:inline-block; margin-left:8px; font-size:14px; font-weight:700; color:#25D366; text-decoration:none; padding:9px 16px; border:1.5px solid #25D366; border-radius:50px;">WhatsApp</a>
+        </td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="padding-top:30px;"><div style="height:1px; background:#e7eaef; line-height:1px; font-size:0;">&nbsp;</div></td></tr>
+  </table>
+</td></tr>
+{% endmacro %}
+{% macro card_highlight(card) %}
+{% set bien = card.bien %}
+<tr><td class="sec" style="padding:0 40px 34px;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#fbf7ec; border:1.5px solid #C89A32; border-radius:14px;">
+    <tr><td style="padding:20px 20px 0;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:14px;"><tr>
+        <td valign="middle"><span style="display:inline-block; background:#C89A32; color:#ffffff; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:7px 14px; border-radius:50px;">★&nbsp;&nbsp;À ne pas manquer</span></td>
+        <td valign="middle" align="right"><span style="font-size:12px; color:#a8801f; font-weight:700; letter-spacing:0.5px;">{{ get_badge_text(bien) }}</span></td>
+      </tr></table>
+    </td></tr>
+    <tr><td style="padding:0 20px 16px;">
+      <a href="{{ get_bien_url(bien, campaign, 'photo') }}"><img src="{{ get_image_url(bien) }}" alt="{{ get_titre_display(bien) }}" width="520" class="ed-img" style="width:100%; height:300px; object-fit:cover; display:block; border-radius:8px;"></a>
+    </td></tr>
+    <tr><td style="padding:0 20px 22px;">
+      <p style="margin:0 0 8px; font-size:12px; letter-spacing:2px; text-transform:uppercase; color:#0d9488; font-weight:700;"><span style="color:#c2b48c;">N°{{ '%02d'|format(card.num) }}</span>&nbsp;&nbsp;·&nbsp;&nbsp;{{ get_badge_text(bien) }}</p>
+      <h3 class="prop-title" style="margin:0 0 10px; font-size:23px; font-weight:800; color:#1a1a2e; line-height:1.22; letter-spacing:-0.3px;">{{ get_titre_display(bien) }}</h3>
+      <p class="prop-meta" style="margin:0 0 12px; font-size:13px; color:#8a93a3; font-weight:500;">{{ get_commune_display(bien) }}{% if get_surface_line(bien) %} · {{ get_surface_line(bien) }}{% endif %}</p>
+      <p class="prop-desc" style="margin:0 0 18px; font-size:15px; color:#4a5568; line-height:1.65; background:#ffffff; padding:14px 16px; border-radius:10px;">{{ get_short_desc(bien) }}</p>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td valign="middle" class="price-cell"><span class="prop-price" style="font-size:26px; font-weight:800; color:#0d9488; letter-spacing:-0.5px;">{{ get_prix_display(bien) }}</span></td>
+        <td valign="middle" align="right" class="ed-links">
+          <a href="{{ get_bien_url(bien, campaign, 'cta') }}" style="display:inline-block; font-size:14px; font-weight:700; color:#0d9488; text-decoration:none; padding:9px 18px; border:1.5px solid #0d9488; border-radius:50px;">Découvrir&nbsp;→</a>
+          <a href="{{ get_wa_url(bien) }}" style="display:inline-block; margin-left:8px; font-size:14px; font-weight:700; color:#25D366; text-decoration:none; padding:9px 16px; border:1.5px solid #25D366; border-radius:50px;">WhatsApp</a>
+        </td>
+      </tr></table>
+    </td></tr>
+  </table>
 </td></tr>
 {% endmacro %}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="x-apple-disable-message-reformatting">
-    <meta name="color-scheme" content="light dark">
-    <meta name="supported-color-schemes" content="light dark">
-    <title>La sélection du Cabinet Laurent Valère du mois de {{ mois }} {{ year }}</title>
-    <!--[if !mso]><!-->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!--<![endif]-->
-    <style type="text/css">
-        * { box-sizing: border-box; }
-        body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
-        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; display: block; }
-        body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
-        a { text-decoration: none; }
-        a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
-        body, td, th, p, div, h1, h2, h3, h4, h5, h6 {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-        }
-        h1,h2,h3,h4,h5,h6 { margin:0; padding:0; font-weight:700; }
-        p { margin:0; padding:0; }
-        .bento-card { border-radius: 24px; overflow: hidden; }
-        @media only screen and (min-width: 641px) {
-            .container { border-radius: 32px; margin: 32px auto; box-shadow: 0 25px 80px -20px rgba(0,0,0,0.12); }
-        }
-        @media only screen and (max-width: 640px) {
-            .container { width: 100% !important; max-width: 100% !important; border-radius: 0 !important; }
-            .sec { padding-left: 16px !important; padding-right: 16px !important; }
-            .logo-header { width: 100% !important; max-width: 100% !important; padding: 0 8px !important; }
-            .hero-title { font-size: 34px !important; line-height: 1.15 !important; letter-spacing: -0.5px !important; }
-            .hero-sub { font-size: 19px !important; line-height: 1.65 !important; }
-            .sec-title { font-size: 30px !important; letter-spacing: -0.3px !important; }
-            p[style*="letter-spacing:12px"] { white-space: nowrap !important; }
-            .cta-sell-decor { display: none !important; }
-            .bento-card { border-radius: 22px !important; }
-            .card-img { height: 220px !important; }
-            .prop-title { font-size: 28px !important; line-height: 1.3 !important; font-weight: 800 !important; }
-            .price-break { display: inline !important; margin-top: 0 !important; margin-left: 6px !important; font-size: 22px !important; font-weight: 700 !important; }
-            .card-body p { font-size: 20px !important; line-height: 1.65 !important; }
-            .card-body p[style*="font-size:13px"] { font-size: 18px !important; font-weight: 500 !important; }
-            .card-body span[style*="font-size:10px"] { font-size: 13px !important; padding: 7px 16px !important; }
-            .card-body { padding: 24px 20px !important; }
-            .cta-sell-photo { display: table-cell !important; width: auto !important; text-align: left !important; padding-right: 16px !important; padding-bottom: 0 !important; }
-            .cta-sell-content { display: table-cell !important; width: auto !important; text-align: left !important; }
-            .btn-row td { display: table-cell !important; width: 33.33% !important; padding: 0 5px !important; vertical-align: top !important; }
-            .btn-row td:first-child { padding-left: 0 !important; }
-            .btn-row td:last-child { padding-right: 0 !important; }
-            .btn-row .cta-btn { display: block !important; width: 100% !important; text-align: center !important; padding: 16px 4px !important; font-size: 15px !important; font-weight: 700 !important; white-space: nowrap !important; box-sizing: border-box !important; min-height: 56px !important; line-height: 1.3 !important; border-radius: 16px !important; }
-        }
-        @media only screen and (max-width: 390px) {
-            .sec { padding-left: 12px !important; padding-right: 12px !important; }
-            .hero-title { font-size: 30px !important; }
-            .prop-title { font-size: 24px !important; }
-            .price-break { font-size: 19px !important; }
-            .sec-title { font-size: 26px !important; }
-            .card-img { height: 200px !important; }
-            .card-body p { font-size: 18px !important; }
-            .card-body p[style*="font-size:13px"] { font-size: 16px !important; }
-            .btn-row .cta-btn { font-size: 14px !important; padding: 15px 2px !important; }
-        }
-        @media (prefers-color-scheme: dark) {
-            body { background-color: #121212 !important; }
-            .container { background-color: #1a1a2e !important; }
-            .dark-bg { background-color: #1a1a2e !important; }
-            .dark-card { background-color: #2d2d44 !important; }
-            .dark-text { color: #e0e0e0 !important; }
-            .dark-subtext { color: #a0a0b0 !important; }
-        }
-    </style>
-    <!--[if mso]>
-    <style type="text/css">
-        .btn-row .cta-btn { padding: 14px 16px !important; }
-    </style>
-    <![endif]-->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light">
+<title>La sélection du Cabinet Laurent Valère — {{ mois }} {{ year }}</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style type="text/css">
+  *{box-sizing:border-box;}
+  body,table,td,p,a,li{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+  table,td{mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;}
+  img{-ms-interpolation-mode:bicubic;border:0;outline:none;text-decoration:none;display:block;}
+  body{margin:0!important;padding:0!important;width:100%!important;}
+  a{text-decoration:none;}
+  a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;}
+  body,td,th,p,div,h1,h2,h3,h4,h5,h6{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;}
+  h1,h2,h3,h4,h5,h6{margin:0;padding:0;font-weight:700;}
+  p{margin:0;padding:0;}
+  @media only screen and (min-width:641px){
+    .container{margin:28px auto;box-shadow:0 24px 70px -24px rgba(20,30,60,0.18);}
+  }
+  @media only screen and (max-width:640px){
+    .container{width:100%!important;max-width:100%!important;}
+    .sec{padding-left:22px!important;padding-right:22px!important;}
+    .logo-header{padding:0 10px!important;}
+    .hero-title{font-size:36px!important;line-height:1.12!important;}
+    .hero-sub{font-size:17px!important;}
+    .sec-title{font-size:27px!important;}
+    .ed-img{height:230px!important;}
+    .prop-title{font-size:22px!important;}
+    .prop-meta{font-size:14px!important;}
+    .prop-desc{font-size:16px!important;line-height:1.6!important;}
+    .prop-price{white-space:nowrap!important;}
+    .price-cell{display:block!important;width:100%!important;padding-bottom:14px!important;}
+    .ed-links{display:block!important;width:100%!important;text-align:left!important;white-space:nowrap!important;}
+    .stat-row .stat-num{font-size:21px!important;}
+    .stat-row .stat-label{font-size:10px!important;letter-spacing:0.5px!important;}
+    .sell-pad{padding:22px 20px 26px!important;}
+    .sell-photo, .sell-photo img{width:96px!important;height:96px!important;}
+    .sell-photo-wrap{margin:2px 0 10px 12px!important;}
+    .sell-title{font-size:22px!important;}
+    .docu-pad{padding:22px 20px!important;}
+    .docu-title{font-size:21px!important;line-height:1.2!important;}
+    .docu-badge{display:none!important;}
+  }
+  @media only screen and (max-width:390px){
+    .sec{padding-left:16px!important;padding-right:16px!important;}
+    .hero-title{font-size:32px!important;}
+  }
+</style>
 </head>
+<body style="margin:0; padding:0; background-color:#eef1f5; width:100%;">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">{{ preheader }}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#eef1f5;">
+<tr><td align="center" style="padding:0;">
 
-<body style="margin:0; padding:0; background-color:#f0f2f5; width:100%;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="width:100%; max-width:600px;">
+    <tr><td align="center" style="padding:12px 20px;">
+      <p style="font-size:11px; color:#a0a7b4; margin:0;">Cet e-mail ne s'affiche pas correctement ? <a href="https://www.cabinetlaurentvalere.com/newsletters/{{ mois_slug }}-{{ year }}.html" style="color:#256CB8; text-decoration:underline;">Voir en ligne</a></p>
+    </td></tr>
+  </table>
 
-    <!-- Preheader texte caché -->
-    <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">{{ preheader }}&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
+  <table role="presentation" class="container" width="600" cellspacing="0" cellpadding="0" style="background-color:#ffffff; max-width:600px;">
 
-    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color:#f0f2f5;">
-        <tr><td align="center" style="padding:0;">
+    <!-- HEADER -->
+    <tr><td align="center" style="padding:8px 0 0;">
+      <a href="https://www.cabinetlaurentvalere.com?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=header-logo"><img src="https://www.cabinetlaurentvalere.com/images/logo-clv-signature.png" alt="Cabinet Laurent Valère" width="520" class="logo-header" style="width:520px; max-width:100%; height:auto; display:block; margin:26px auto 8px; padding:0 40px;"></a>
+    </td></tr>
 
-            <!-- Voir en ligne -->
-            <table role="presentation" width="640" cellspacing="0" cellpadding="0" style="max-width:640px;">
-                <tr><td align="center" style="padding:10px 20px;">
-                    <p style="font-size:11px; color:#999999; margin:0;">Cet e-mail ne s&#8217;affiche pas correctement&#160;? <a href="https://www.cabinetlaurentvalere.com/newsletters/{{ mois_slug }}-{{ year }}.html" style="color:#256CB8; text-decoration:underline;">Voir en ligne</a></p>
-                </td></tr>
-            </table>
+    <!-- HERO éditorial -->
+    <tr><td class="sec" style="padding:22px 40px 12px;">
+      <div style="height:2px; background:#1a1a2e; width:100%; font-size:0; margin-bottom:22px;">&nbsp;</div>
+      <p style="margin:0 0 14px; font-size:12px; letter-spacing:3px; text-transform:uppercase; color:#256CB8; font-weight:700;">La sélection · {{ mois }} {{ year }}</p>
+      <h1 class="hero-title" style="margin:0 0 16px; font-size:44px; font-weight:800; color:#1a1a2e; line-height:1.06; letter-spacing:-1.2px;">À l'agence en ce moment</h1>
+      <p class="hero-sub" style="margin:0 0 10px; font-size:16px; color:#4a5568; line-height:1.6; max-width:460px;">Voici les biens actuellement confiés au cabinet&nbsp;: des maisons et appartements disponibles, visitables dès maintenant, que nous connaissons dossier par dossier.</p>
+      <p style="margin:0 0 22px; font-size:14px; color:#1a1a2e; font-weight:600; font-style:italic;">Arnaud Valère &amp; Laurent Valère</p>
+      <table role="presentation" cellspacing="0" cellpadding="0" width="100%" class="stat-row" style="border-top:1px solid #e7eaef; padding-top:20px;">
+        <tr>
+          <td width="33%" valign="top" style="padding:20px 12px 0 0; border-right:1px solid #e7eaef;"><p class="stat-num" style="font-size:26px; font-weight:800; color:#1a1a2e; margin:0;">40</p><p class="stat-label" style="font-size:12px; color:#8a93a3; margin:2px 0 0; text-transform:uppercase; letter-spacing:1px;">ans d'expérience</p></td>
+          <td width="34%" valign="top" style="padding:20px 12px 0; border-right:1px solid #e7eaef;"><p class="stat-num" style="font-size:26px; font-weight:800; color:#0d9488; margin:0;">{{ prix_min_display }}</p><p class="stat-label" style="font-size:12px; color:#8a93a3; margin:2px 0 0; text-transform:uppercase; letter-spacing:1px;">à partir de</p></td>
+          <td width="33%" valign="top" style="padding:20px 0 0 12px;"><p class="stat-num" style="font-size:26px; font-weight:800; color:#C89A32; margin:0;">1985</p><p class="stat-label" style="font-size:12px; color:#8a93a3; margin:2px 0 0; text-transform:uppercase; letter-spacing:1px;">depuis</p></td>
+        </tr>
+      </table>
+    </td></tr>
+    <tr><td style="height:26px; font-size:0; line-height:0;">&nbsp;</td></tr>
 
-            <table role="presentation" class="container" width="640" cellspacing="0" cellpadding="0" style="background-color:#f8f9fb; max-width:640px;">
+    {% if appartement_cards %}
+    <tr><td class="sec" style="padding:20px 40px 22px;">
+      <div style="width:44px; height:3px; background:#0d9488; margin-bottom:16px; font-size:0;">&nbsp;</div>
+      <h2 class="sec-title" style="margin:0 0 6px; font-size:30px; font-weight:800; color:#1a1a2e; letter-spacing:-0.6px;">Appartements</h2>
+      <p style="margin:0; font-size:14px; color:#8a93a3;">Des appartements accessibles au fort potentiel</p>
+    </td></tr>
+    {% for card in appartement_cards %}
+      {% if card.highlight %}{{ card_highlight(card) }}{% else %}{{ card_bien(card, 'teal') }}{% endif %}
+    {% endfor %}
+    {% endif %}
 
-                <!-- HEADER LOGO -->
-                <tr><td style="padding:0; background-color:#f8f9fb;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                        <tr><td align="center">
-                            <a href="https://www.cabinetlaurentvalere.com?utm_source=newsletter&amp;utm_medium=email&amp;utm_campaign={{ campaign }}&amp;utm_content=header-logo">
-                                <img src="https://www.cabinetlaurentvalere.com/images/logo-clv-signature.png" alt="Cabinet Laurent Val&#232;re - Agence immobili&#232;re en Martinique depuis 1985" width="584" class="logo-header" style="width:584px; max-width:100%; height:auto; display:block; margin:24px auto; padding:0 28px;">
-                            </a>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-                <!-- HERO -->
-                <tr><td class="sec" style="padding:0 28px 24px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="bento-card" style="border-radius:28px; background:linear-gradient(145deg, #e8f2fc 0%, #d4e6f7 50%, #c0d9f2 100%); position:relative;">
-                        <tr><td style="padding:44px 36px; text-align:center;">
-                            <div style="position:absolute; top:10px; left:16px; font-size:40px; color:#256CB8; opacity:0.04;">&#10022;</div>
-                            <div style="position:absolute; bottom:10px; right:16px; font-size:40px; color:#0d9488; opacity:0.06;">&#9670;</div>
-                            <p style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#256CB8; margin:0 0 14px; opacity:0.7;">
-                                &#9670; {{ mois }} {{ year }} &#9670;
-                            </p>
-                            <h1 class="hero-title" style="font-size:32px; font-weight:800; color:#1a1a2e; margin:0 0 14px; line-height:1.15; letter-spacing:-0.5px;">
-                                Notre s&#233;lection immobili&#232;re &#127961;
-                            </h1>
-                            <p class="hero-sub" style="font-size:15px; color:#4a5568; margin:0 0 16px; line-height:1.65;">
-                                Le Cabinet Laurent Val&#232;re vous propose une s&#233;lection de biens disponibles et rapidement op&#233;rationnels.
-                            </p>
-                            <p style="font-size:14px; color:#718096; margin:0 0 26px; line-height:1.5;">
-                                Appartements &#183; Villas &#183; Terrains &#183; Prestige
-                            </p>
-                            <a href="https://cabinetlaurentvalere.com/achat/?utm_source=newsletter&amp;utm_medium=email&amp;utm_campaign={{ campaign }}&amp;utm_content=hero-voir-tous" style="display:inline-block; padding:14px 32px; font-size:14px; font-weight:600; border-radius:50px; background:linear-gradient(145deg, #256CB8, #1a5490); color:#ffffff; text-decoration:none; box-shadow:0 4px 14px rgba(37,108,184,0.3);">
-                                Voir tous nos biens &#10024;
-                            </a>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-                {% if opportunites %}
-                <!-- SECTION : OPPORTUNITÉS -->
-                <tr><td style="padding:16px 28px 8px; text-align:center;">
-                    <p style="font-size:20px; color:#0d9488; opacity:0.3; margin:0 0 8px; letter-spacing:12px;">&#9670; &#9670; &#9670;</p>
-                    <h2 class="sec-title" style="font-size:26px; font-weight:800; color:#1a1a2e; margin:0 0 8px; letter-spacing:-0.3px;">Opportunit&#233;s &#224; saisir &#128176;</h2>
-                    <p style="font-size:14px; color:#718096; margin:0 0 16px; line-height:1.5;">Des biens accessibles au fort potentiel</p>
-                </td></tr>
-                {% for bien in opportunites %}
-                {{ card_bien(bien, campaign, 'opportunite') }}
-                {% endfor %}
-                {% endif %}
-
-                {% if villas %}
-                <!-- SECTION : VILLAS -->
-                <tr><td style="padding:16px 28px 8px; text-align:center;">
-                    <p style="font-size:20px; color:#0d9488; opacity:0.3; margin:0 0 8px; letter-spacing:12px;">&#9670; &#9670; &#9670;</p>
-                    <h2 class="sec-title" style="font-size:26px; font-weight:800; color:#1a1a2e; margin:0 0 8px; letter-spacing:-0.3px;">Villas &amp; vie de famille &#127968;</h2>
-                    <p style="font-size:14px; color:#718096; margin:0 0 16px; line-height:1.5;">Des maisons pour tous les projets de vie</p>
-                </td></tr>
-                {% for bien in villas %}
-                {{ card_bien(bien, campaign, 'villa') }}
-                {% endfor %}
-                {% endif %}
-
-                <!-- SECTION : AVIS CLIENTS -->
-                <tr><td style="padding:16px 28px 8px; text-align:center;">
-                    <p style="font-size:20px; color:#0d9488; opacity:0.3; margin:0 0 8px; letter-spacing:12px;">&#9670; &#9670; &#9670;</p>
-                    <h2 class="sec-title" style="font-size:26px; font-weight:800; color:#1a1a2e; margin:0 0 8px; letter-spacing:-0.3px;">Ils nous font confiance &#11088;</h2>
-                    <p style="font-size:14px; color:#718096; margin:0 0 16px; line-height:1.5;">28 avis Google &#183; Note moyenne 4,8/5</p>
-                </td></tr>
-                <tr><td class="sec" style="padding:0 28px 28px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="bento-card" style="border-radius:28px; background:#ffffff; box-shadow:0 8px 32px rgba(0,0,0,0.08);">
-                        <tr><td style="padding:32px 28px 12px; text-align:center;">
-                            <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin-bottom:16px;">
-                                <tr><td style="background:#ffffff; border:1.5px solid #e8e8e8; border-radius:50px; padding:8px 20px;">
-                                    <table role="presentation" cellspacing="0" cellpadding="0"><tr>
-                                        <td style="padding-right:8px; vertical-align:middle;"><img src="https://www.google.com/favicon.ico" alt="G" width="18" height="18" style="width:18px; height:18px; display:block; border-radius:2px;"></td>
-                                        <td style="vertical-align:middle;"><span style="font-size:14px; font-weight:600; color:#5f6368;">Avis Google</span></td>
-                                    </tr></table>
-                                </td></tr>
-                            </table>
-                            <h2 class="sec-title" style="font-size:24px; font-weight:800; color:#1a1a2e; margin:0 0 10px; letter-spacing:-0.3px;">Ce que nos clients disent de nous</h2>
-                            <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin-bottom:24px;">
-                                <tr>
-                                    <td style="vertical-align:middle; padding-right:6px;"><span style="font-size:13px; color:#fbbc04;">&#9733;&#9733;&#9733;&#9733;&#9733;</span></td>
-                                    <td style="vertical-align:middle;"><span style="font-size:16px; font-weight:700; color:#1a1a2e;">4.8</span>&nbsp;<span style="font-size:13px; color:#70757a;">(28 avis)</span></td>
-                                </tr>
-                            </table>
-                        </td></tr>
-                        <tr><td style="padding:0 20px 28px;">
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:12px;">
-                                <tr><td style="background:#ffffff; border:1.5px solid #e8e8e8; border-radius:16px; padding:20px;">
-                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:12px;"><tr>
-                                        <td width="40" style="vertical-align:top;"><div style="width:36px; height:36px; border-radius:50%; background:#E8EAED; text-align:center; line-height:36px; font-size:14px; font-weight:700; color:#5f6368;">M</div></td>
-                                        <td style="vertical-align:top; padding-left:10px;">
-                                            <p style="font-size:13px; font-weight:700; color:#1a1a2e; margin:0;">Marie-Claire D.</p>
-                                            <p style="font-size:11px; color:#70757a; margin:0;">Il y a 2 semaines</p>
-                                        </td>
-                                        <td width="24" style="vertical-align:top; text-align:right;"><img src="https://www.google.com/favicon.ico" alt="Google" width="16" height="16" style="width:16px; height:16px; display:inline-block; border-radius:2px;"></td>
-                                    </tr></table>
-                                    <p style="font-size:13px; color:#fbbc04; margin:0 0 8px; letter-spacing:1px;">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
-                                    <p style="font-size:14px; color:#3c4043; margin:0; line-height:1.6;">Excellent accompagnement pour la vente de notre maison au Lamentin. L&#8217;&#233;quipe est professionnelle, r&#233;active et de bon conseil. Je recommande vivement&#160;!</p>
-                                </td></tr>
-                            </table>
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:12px;">
-                                <tr><td style="background:#ffffff; border:1.5px solid #e8e8e8; border-radius:16px; padding:20px;">
-                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:12px;"><tr>
-                                        <td width="40" style="vertical-align:top;"><div style="width:36px; height:36px; border-radius:50%; background:#E8EAED; text-align:center; line-height:36px; font-size:14px; font-weight:700; color:#5f6368;">J</div></td>
-                                        <td style="vertical-align:top; padding-left:10px;">
-                                            <p style="font-size:13px; font-weight:700; color:#1a1a2e; margin:0;">Jean-Philippe M.</p>
-                                            <p style="font-size:11px; color:#70757a; margin:0;">Il y a 1 mois</p>
-                                        </td>
-                                        <td width="24" style="vertical-align:top; text-align:right;"><img src="https://www.google.com/favicon.ico" alt="Google" width="16" height="16" style="width:16px; height:16px; display:inline-block; border-radius:2px;"></td>
-                                    </tr></table>
-                                    <p style="font-size:13px; color:#fbbc04; margin:0 0 8px; letter-spacing:1px;">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
-                                    <p style="font-size:14px; color:#3c4043; margin:0; line-height:1.6;">Cabinet s&#233;rieux et comp&#233;tent. Arnaud nous a accompagn&#233;s tout au long de notre achat. Tr&#232;s bonne connaissance du march&#233; martiniquais.</p>
-                                </td></tr>
-                            </table>
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                                <tr><td style="background:#ffffff; border:1.5px solid #e8e8e8; border-radius:16px; padding:20px;">
-                                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:12px;"><tr>
-                                        <td width="40" style="vertical-align:top;"><div style="width:36px; height:36px; border-radius:50%; background:#E8EAED; text-align:center; line-height:36px; font-size:14px; font-weight:700; color:#5f6368;">S</div></td>
-                                        <td style="vertical-align:top; padding-left:10px;">
-                                            <p style="font-size:13px; font-weight:700; color:#1a1a2e; margin:0;">St&#233;phanie L.</p>
-                                            <p style="font-size:11px; color:#70757a; margin:0;">Il y a 2 mois</p>
-                                        </td>
-                                        <td width="24" style="vertical-align:top; text-align:right;"><img src="https://www.google.com/favicon.ico" alt="Google" width="16" height="16" style="width:16px; height:16px; display:inline-block; border-radius:2px;"></td>
-                                    </tr></table>
-                                    <p style="font-size:13px; color:#fbbc04; margin:0 0 8px; letter-spacing:1px;">&#9733;&#9733;&#9733;&#9733;&#9733;</p>
-                                    <p style="font-size:14px; color:#3c4043; margin:0; line-height:1.6;">Une agence familiale qui prend le temps d&#8217;&#233;couter et de comprendre nos besoins. L&#8217;expertise de Laurent est un vrai plus pour l&#8217;estimation.</p>
-                                </td></tr>
-                            </table>
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:20px;">
-                                <tr><td style="text-align:center;">
-                                    <a href="https://www.google.fr/maps/place/Cabinet+Laurent+Val%C3%A8re/" style="display:inline-block; padding:10px 24px; font-size:13px; font-weight:600; border-radius:50px; background:#f8f9fb; color:#1a73e8; text-decoration:none; border:1.5px solid #e8e8e8;">Voir tous nos avis Google &#10132;</a>
-                                </td></tr>
-                            </table>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-                {% if prestige %}
-                <!-- SECTION : PRESTIGE -->
-                <tr><td style="padding:16px 28px 8px; text-align:center;">
-                    <p style="font-size:20px; color:#0d9488; opacity:0.3; margin:0 0 8px; letter-spacing:12px;">&#10022; &#10022; &#10022;</p>
-                    <h2 class="sec-title" style="font-size:26px; font-weight:800; color:#1a1a2e; margin:0 0 8px; letter-spacing:-0.3px;">Prestige &amp; exception &#128142;</h2>
-                    <p style="font-size:14px; color:#718096; margin:0 0 16px; line-height:1.5;">Nos biens les plus exclusifs</p>
-                </td></tr>
-                {% for bien in prestige %}
-                {{ card_bien(bien, campaign, 'prestige') }}
-                {% endfor %}
-                {% endif %}
-
-                <!-- CTA VENDEURS -->
-                <tr><td class="sec" style="padding:0 28px 28px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="bento-card" style="border-radius:28px; background:linear-gradient(145deg, #e8f2fc, #d4e6f7, #c0d9f2); position:relative;">
-                        <tr><td style="padding:32px 28px;">
-                            <div class="cta-sell-decor" style="position:absolute; top:12px; right:18px; font-size:44px; color:#256CB8; opacity:0.05;">&#10022;</div>
-                            <div class="cta-sell-decor" style="position:absolute; bottom:12px; left:18px; font-size:36px; color:#0d9488; opacity:0.06;">&#9670;</div>
-                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
-                                <td class="cta-sell-photo" width="120" valign="middle" style="padding-right:20px;">
-                                    <div style="width:120px; height:120px; border-radius:16px; overflow:hidden; box-shadow:0 8px 24px rgba(37,108,184,0.2);">
-                                        <img src="https://www.cabinetlaurentvalere.com/images/team/arnaud-valere.jpg" alt="Arnaud Val&#232;re - Votre conseiller immobilier en Martinique" width="120" style="width:120px; height:120px; object-fit:cover; object-position:center 15%; display:block;">
-                                    </div>
-                                </td>
-                                <td class="cta-sell-content" valign="middle">
-                                    <span style="display:inline-block; padding:5px 12px; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; border-radius:50px; background:#256CB8; color:#ffffff; margin-bottom:10px;">&#127919; Propri&#233;taires</span>
-                                    <h2 style="font-size:20px; font-weight:800; color:#1a1a2e; margin:0 0 8px; line-height:1.2;">Vous vendez en {{ year }}&#160;? &#10024;</h2>
-                                    <p style="font-size:14px; color:#4a5568; margin:0 0 10px; line-height:1.6;">Depuis <strong>1985</strong>, le Cabinet Laurent Val&#232;re accompagne les propri&#233;taires martiniquais dans la vente de leur bien. Notre connaissance approfondie du march&#233; local, notre r&#233;seau d&#8217;acheteurs qualifi&#233;s et notre approche personnalis&#233;e vous garantissent une vente dans les meilleures conditions.</p>
-                                    <p style="font-size:14px; color:#4a5568; margin:0 0 10px; line-height:1.6;"><strong>Notre accompagnement complet&#160;:</strong> estimation gratuite et pr&#233;cise, reportage photo et vid&#233;o, diffusion &#224; nos prospects, sur nos r&#233;seaux et portails immobiliers, suivi personnalis&#233; jusqu&#8217;&#224; la signature chez le notaire.</p>
-                                    <a href="https://cabinetlaurentvalere.com/vente/?utm_source=newsletter&amp;utm_medium=email&amp;utm_campaign={{ campaign }}&amp;utm_content=cta-estimation" style="display:inline-block; padding:11px 22px; font-size:13px; font-weight:700; border-radius:50px; background:linear-gradient(145deg, #256CB8, #1a5490); color:#ffffff; text-decoration:none; box-shadow:0 4px 14px rgba(37,108,184,0.35);">Oui, je vends mon bien &#8594;</a>
-                                </td>
-                            </tr></table>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-                <!-- TRANSFERT -->
-                <tr><td class="sec" style="padding:0 28px 24px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="text-align:center;">
-                        <tr><td style="padding:16px 20px; border-radius:16px; background:#f0f2f5;">
-                            <p style="font-size:13px; color:#718096; margin:0 0 8px; line-height:1.5;">Vous connaissez quelqu&#8217;un qui cherche un bien en Martinique&#160;?</p>
-                            <a href="mailto:?subject=S%C3%A9lection%20immobili%C3%A8re%20Martinique%20{{ mois }}%20{{ year }}%20-%20Cabinet%20Laurent%20Val%C3%A8re&amp;body=Bonjour%2C%0A%0AJe%20te%20partage%20cette%20s%C3%A9lection%20de%20biens%20immobiliers%20en%20Martinique%20du%20Cabinet%20Laurent%20Val%C3%A8re%20({{ mois_slug }}%20{{ year }})%20%3A%0A%0Ahttps%3A%2F%2Fwww.cabinetlaurentvalere.com%2Fnewsletters%2F{{ mois_slug }}-{{ year }}.html%0A%0ABonne%20d%C3%A9couverte%20!" style="display:inline-block; padding:10px 24px; font-size:13px; font-weight:600; border-radius:50px; background:transparent; color:#256CB8; border:1.5px solid #256CB8; text-decoration:none;">Transf&#233;rer cette s&#233;lection &#10132;</a>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-                <!-- CONTACT -->
-                <tr><td class="sec" style="padding:0 28px 32px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="bento-card" style="border-radius:24px; background:#ffffff; text-align:center;">
-                        <tr><td style="padding:36px 28px;">
-                            <p style="font-size:18px; font-weight:700; color:#1a1a2e; margin:0 0 6px;">Une question&#160;? Un projet&#160;? &#128241;</p>
-                            <p style="font-size:14px; color:#718096; margin:0 0 20px;">Notre &#233;quipe vous accompagne &#224; chaque &#233;tape</p>
-                            <a href="tel:+596696334700" style="display:inline-block; padding:16px 36px; font-size:17px; font-weight:700; border-radius:50px; background:linear-gradient(145deg, #256CB8, #1a5490); color:#ffffff; text-decoration:none; box-shadow:0 4px 14px rgba(37,108,184,0.3);">
-                                06 96 33 47 00
-                            </a>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-                <!-- FOOTER -->
-                <tr><td style="padding:0 28px 32px;">
-                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" class="bento-card" style="border-radius:24px; background:linear-gradient(145deg, #1a1a2e, #2d2d44); text-align:center;">
-                        <tr><td style="padding:36px 28px;">
-                            <table role="presentation" cellspacing="0" cellpadding="0" align="center"><tr>
-                                <td style="padding:0 8px 20px;"><a href="https://www.instagram.com/cabinetlaurentvalere" style="display:inline-block; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12); text-align:center; line-height:44px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/instagram.svg" width="20" height="20" alt="Instagram" style="width:20px; height:20px; display:inline-block; vertical-align:middle; filter:invert(1);"></a></td>
-                                <td style="padding:0 8px 20px;"><a href="https://www.facebook.com/laurentvalereimmobilier" style="display:inline-block; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12); text-align:center; line-height:44px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/facebook.svg" width="20" height="20" alt="Facebook" style="width:20px; height:20px; display:inline-block; vertical-align:middle; filter:invert(1);"></a></td>
-                                <td style="padding:0 8px 20px;"><a href="https://www.linkedin.com/company/105845668/" style="display:inline-block; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12); text-align:center; line-height:44px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg" width="20" height="20" alt="LinkedIn" style="width:20px; height:20px; display:inline-block; vertical-align:middle; filter:invert(1);"></a></td>
-                                <td style="padding:0 8px 20px;"><a href="https://www.youtube.com/@cabinetlaurentvalere" style="display:inline-block; width:44px; height:44px; border-radius:50%; background:rgba(255,255,255,0.12); text-align:center; line-height:44px; text-decoration:none;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/youtube.svg" width="20" height="20" alt="YouTube" style="width:20px; height:20px; display:inline-block; vertical-align:middle; filter:invert(1);"></a></td>
-                            </tr></table>
-                            <p style="font-size:15px; font-weight:700; color:#ffffff; margin:0 0 4px;">Cabinet Laurent Val&#232;re</p>
-                            <p style="font-size:13px; color:#5eead4; margin:0 0 20px; font-weight:500;">Agence immobili&#232;re familiale en Martinique depuis 1985</p>
-                            <p style="font-size:12px; color:rgba(255,255,255,0.5); margin:0 0 12px;">
-                                <a href="https://www.cabinetlaurentvalere.com?utm_source=newsletter&amp;utm_medium=email&amp;utm_campaign={{ campaign }}&amp;utm_content=footer-site" style="color:rgba(255,255,255,0.5);">Site web</a>&nbsp;|&nbsp;
-                                <a href="mailto:contact@cabinetlaurentvalere.com" style="color:rgba(255,255,255,0.5);">Contact</a>
-                            </p>
-                            <p style="font-size:11px; color:rgba(255,255,255,0.35); margin:0;">&#169; {{ year }} Cabinet Laurent Val&#232;re. Tous droits r&#233;serv&#233;s.</p>
-                        </td></tr>
-                    </table>
-                </td></tr>
-
-            </table>
+    <!-- CARD BLOG -->
+    {% if article %}
+    <tr><td class="sec" style="padding:6px 40px 40px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#eef6fc; border-radius:20px;">
+        <tr><td style="padding:0;">
+          <a href="{{ article.url }}"><img src="{{ article.image_url }}" alt="{{ article.titre }}" width="520" style="width:100%; height:190px; object-fit:cover; object-position:center 35%; display:block; border-radius:19px 19px 0 0;"></a>
         </td></tr>
-    </table>
+        <tr><td class="docu-pad" style="padding:24px 30px 28px;">
+          <p style="margin:0 0 10px; font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:#256CB8; font-weight:700;">Infos & conseils · {{ article.categorie }}</p>
+          <h2 class="docu-title" style="margin:0 0 12px; font-size:22px; font-weight:800; color:#1a1a2e; line-height:1.25; letter-spacing:-0.5px;">{{ article.titre }}</h2>
+          <p style="margin:0 0 12px; font-size:14px; color:#4a5568; line-height:1.65; background:#ffffff; border-left:3px solid #256CB8; padding:12px 16px; border-radius:0 10px 10px 0;">«&nbsp;{{ article.excerpt }}&nbsp;»</p>
+          <p style="margin:0 0 20px; font-size:12px; color:#8a93a3;">{{ article.temps_lecture }} min de lecture</p>
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+            <td valign="middle"><a href="{{ article.url }}" style="display:inline-block; background:#256CB8; color:#ffffff; padding:12px 24px; border-radius:50px; font-size:14px; font-weight:700;">Lire l'analyse complète&nbsp;→</a></td>
+          </tr></table>
+        </td></tr>
+      </table>
+    </td></tr>
+    {% endif %}
+
+    {% if villa_cards %}
+    <tr><td class="sec" style="padding:20px 40px 22px;">
+      <div style="width:44px; height:3px; background:#C89A32; margin-bottom:16px; font-size:0;">&nbsp;</div>
+      <h2 class="sec-title" style="margin:0 0 6px; font-size:30px; font-weight:800; color:#1a1a2e; letter-spacing:-0.6px;">Villas &amp; investissements</h2>
+      <p style="margin:0; font-size:14px; color:#8a93a3;">Des biens à fort potentiel de valorisation</p>
+    </td></tr>
+    {% for card in villa_cards %}
+      {% if card.highlight %}{{ card_highlight(card) }}{% else %}{{ card_bien(card, 'gold') }}{% endif %}
+    {% endfor %}
+    {% endif %}
+
+    <!-- ENCART DOCURBANISME -->
+    <tr><td class="sec" style="padding:6px 40px 40px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f4f3ee; border-radius:20px;">
+        <tr><td class="docu-pad" style="padding:26px 30px;">
+
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:14px;"><tr>
+            <td valign="middle" width="28">
+              <table role="presentation" width="28" height="28" cellspacing="0" cellpadding="0"><tr>
+                <td width="28" height="28" align="center" valign="middle" style="width:28px; height:28px; background:#2d8659; border-radius:50%;"><span style="display:inline-block; width:9px; height:9px; border:2px solid #ffffff; border-radius:2px; font-size:0; line-height:0;"></span></td>
+              </tr></table>
+            </td>
+            <td valign="middle" style="padding-left:9px;"><span style="font-family:'DM Sans','Plus Jakarta Sans',-apple-system,Segoe UI,Roboto,Arial,sans-serif; font-size:17px; font-weight:700; color:#1a2421; letter-spacing:-0.4px;">docurbanisme<span style="color:#2d8659;">.</span></span></td>
+            <td valign="middle" align="right" class="docu-badge"><span style="font-family:'DM Sans','Plus Jakarta Sans',Arial,sans-serif; font-size:12px; color:#2d8659; font-weight:600;">35 000+ communes · DOM inclus</span></td>
+          </tr></table>
+
+          <h2 class="docu-title" style="margin:0 0 10px; font-family:'Space Grotesk','Plus Jakarta Sans',-apple-system,Segoe UI,Roboto,Arial,sans-serif; font-size:23px; font-weight:700; color:#1a2421; line-height:1.2; letter-spacing:-0.8px;">Une parcelle ou une propriété en vue ? Sachez ce que son PLU autorise, <span style="background:#c8e0d3; padding:1px 7px; border-radius:5px; white-space:nowrap;">avant de vous engager</span>.</h2>
+
+          <p style="margin:0 0 18px; font-family:'DM Sans','Plus Jakarta Sans',Arial,sans-serif; font-size:14px; color:#5e6964; line-height:1.6;">DocUrbanisme réunit en un seul dossier clair les documents officiels d'une parcelle : zone, règlement, cadastre, risques. Une lecture précieuse avant un achat de terrain ou un projet de construction.</p>
+
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>
+            <td valign="middle"><a href="https://docurbanisme.com?utm_source=newsletter-clv&utm_medium=email&utm_campaign={{ campaign }}&utm_content=encart-docurbanisme" style="display:inline-block; background:#2d8659; color:#ffffff; padding:12px 24px; border-radius:8px; font-family:'DM Sans','Plus Jakarta Sans',Arial,sans-serif; font-size:14px; font-weight:700;">Découvrir DocUrbanisme&nbsp;→</a></td>
+            <td valign="middle" align="right"><span style="font-family:'DM Sans','Plus Jakarta Sans',Arial,sans-serif; font-size:12px; color:#8b958f;">dossier complet dès 14,90&nbsp;€</span></td>
+          </tr></table>
+
+        </td></tr>
+      </table>
+    </td></tr>
+
+    <!-- AVIS clients éditorial -->
+    <tr><td class="sec" style="padding:20px 40px 22px;">
+      <div style="width:44px; height:3px; background:#1a1a2e; margin-bottom:16px; font-size:0;">&nbsp;</div>
+      <p style="margin:0 0 6px; font-size:12px; letter-spacing:2.5px; text-transform:uppercase; color:#1a1a2e; font-weight:700;">Ils nous font confiance</p>
+      <h2 class="sec-title" style="margin:0 0 6px; font-size:30px; font-weight:800; color:#1a1a2e; letter-spacing:-0.6px;">{{ avis.note_globale }}/5 sur Google</h2>
+      <p style="margin:0; font-size:14px; color:#8a93a3;">{{ avis.nombre_avis }} avis · Note moyenne {{ avis.note_globale }} sur 5</p>
+    </td></tr>
+
+    {% for a in avis.liste %}
+    <tr><td class="sec" style="padding:0 40px 16px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-top:1px solid #e7eaef;">
+        <tr><td style="padding-top:18px;">
+          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:10px;"><tr>
+            <td width="40" valign="top"><div style="width:34px; height:34px; border-radius:50%; background:#eef1f5; text-align:center; line-height:34px; font-size:14px; font-weight:700; color:#5f6368;">{{ a.initiale }}</div></td>
+            <td valign="middle" style="padding-left:10px;"><p style="font-size:14px; font-weight:700; color:#1a1a2e; margin:0;">{{ a.nom }}</p><p style="font-size:11px; color:#a0a7b4; margin:0;">{{ a.date }}</p></td>
+            <td valign="middle" align="right"><span style="font-size:13px; color:#fbbc04; letter-spacing:1px;">{{ '★' * a.note }}</span></td>
+          </tr></table>
+          <p style="font-size:15px; color:#4a5568; margin:0; line-height:1.65;">{{ a.commentaire or '' }}</p>
+        </td></tr>
+      </table>
+    </td></tr>
+    {% endfor %}
+    <tr><td class="sec" style="padding:6px 40px 30px;">
+      <a href="{{ avis.lien_google }}" style="display:inline-block; font-size:14px; font-weight:700; color:#256CB8;">Voir tous nos avis Google →</a>
+    </td></tr>
+
+    <!-- CTA VENDEURS éditorial -->
+    <tr><td class="sec" style="padding:0 40px 34px;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f0fdfa; border:1.5px solid #0d9488; border-radius:16px;">
+        <tr>
+          <td class="sell-pad" style="padding:30px 34px 34px;">
+            <table role="presentation" align="right" cellspacing="0" cellpadding="0" class="sell-photo-wrap" style="margin:4px 0 12px 16px;"><tr><td>
+              <div class="sell-photo" style="width:116px; height:116px; border-radius:16px; overflow:hidden; box-shadow:0 8px 24px rgba(13,148,136,0.25);">
+                <img src="https://www.cabinetlaurentvalere.com/images/team/arnaud-valere.jpg" alt="Arnaud Valère - Votre conseiller immobilier en Martinique" width="116" height="116" style="width:116px; height:116px; object-fit:cover; object-position:center 15%; display:block;">
+              </div>
+            </td></tr></table>
+            <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 12px;"><tr>
+              <td valign="middle" width="22"><img src="https://www.cabinetlaurentvalere.com/images/icons/house.png" width="16" height="16" alt="" style="width:16px; height:16px; display:block; opacity:0.8;"></td>
+              <td valign="middle" style="padding-left:8px; font-size:12px; letter-spacing:2.5px; text-transform:uppercase; color:#0d9488; font-weight:800;">Vous vendez ?</td>
+            </tr></table>
+            <h2 class="sell-title" style="margin:0 0 14px; font-size:26px; font-weight:800; color:#1a1a2e; line-height:1.2; letter-spacing:-0.4px;">Vendre en Martinique, c'est notre seul métier <span style="white-space:nowrap;">depuis 40 ans.</span></h2>
+            <p style="margin:0 0 16px; font-size:15px; color:#4a5568; line-height:1.65;">Des centaines de transactions menées à leur terme — zéro mauvaise surprise, jusqu'à la signature.</p>
+            <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 0 22px;">
+              <tr>
+                <td valign="middle" width="26" style="padding:5px 0;"><img src="https://www.cabinetlaurentvalere.com/images/icons/camera.png" width="17" height="17" alt="" style="width:17px; height:17px; display:block; opacity:0.75;"></td>
+                <td valign="middle" style="padding:5px 0 5px 9px; font-size:14px; color:#1a1a2e; font-weight:600;">Reportage photo & vidéo professionnel</td>
+              </tr>
+              <tr>
+                <td valign="middle" width="26" style="padding:5px 0;"><img src="https://www.cabinetlaurentvalere.com/images/icons/globe.png" width="17" height="17" alt="" style="width:17px; height:17px; display:block; opacity:0.75;"></td>
+                <td valign="middle" style="padding:5px 0 5px 9px; font-size:14px; color:#1a1a2e; font-weight:600;">Diffusion sur les portails stratégiques</td>
+              </tr>
+              <tr>
+                <td valign="middle" width="26" style="padding:5px 0;"><img src="https://www.cabinetlaurentvalere.com/images/icons/handshake.png" width="17" height="17" alt="" style="width:17px; height:17px; display:block; opacity:0.75;"></td>
+                <td valign="middle" style="padding:5px 0 5px 9px; font-size:14px; color:#1a1a2e; font-weight:600;">Acheteurs qualifiés, visites ciblées</td>
+              </tr>
+              <tr>
+                <td valign="middle" width="26" style="padding:5px 0;"><img src="https://www.cabinetlaurentvalere.com/images/icons/signature.png" width="17" height="17" alt="" style="width:17px; height:17px; display:block; opacity:0.75;"></td>
+                <td valign="middle" style="padding:5px 0 5px 9px; font-size:14px; color:#1a1a2e; font-weight:600;">Accompagnement jusqu'à la signature</td>
+              </tr>
+            </table>
+            <a href="https://cabinetlaurentvalere.com/vente/?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=cta-vente" style="display:inline-block; padding:15px 30px; font-size:14px; font-weight:700; border-radius:50px; background:#0d9488; color:#ffffff;">Je confie mon bien au Cabinet&nbsp;→</a>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+
+    <!-- CONTACT -->
+    <tr><td class="sec" style="padding:0 40px 34px; text-align:center;">
+      <p style="font-size:19px; font-weight:800; color:#1a1a2e; margin:0 0 6px;">Une question ? Un projet ?</p>
+      <p style="font-size:14px; color:#8a93a3; margin:0 0 22px;">Notre équipe vous accompagne à chaque étape</p>
+      <a href="tel:+596696334700" style="display:inline-block; padding:16px 40px; font-size:18px; font-weight:800; border-radius:50px; background:#256CB8; color:#ffffff; letter-spacing:0.5px;">06 96 33 47 00</a>
+    </td></tr>
+
+    <!-- FOOTER -->
+    <tr><td style="padding:0 40px 40px;">
+      <div style="border-top:1px solid #e7eaef; padding-top:30px; text-align:center;">
+        <table role="presentation" cellspacing="0" cellpadding="0" align="center" style="margin-bottom:20px;"><tr>
+          <td style="padding:0 7px;"><table role="presentation" width="42" height="42" cellspacing="0" cellpadding="0"><tr><td width="42" height="42" align="center" valign="middle" style="width:42px; height:42px; border-radius:50%; background:#eef1f5;"><a href="https://www.instagram.com/cabinetlaurentvalere?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=footer-instagram" style="display:block; font-size:0; line-height:0;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/instagram.svg" width="18" height="18" alt="instagram" style="width:18px; height:18px; display:block; opacity:0.55; border:0;"></a></td></tr></table></td>
+          <td style="padding:0 7px;"><table role="presentation" width="42" height="42" cellspacing="0" cellpadding="0"><tr><td width="42" height="42" align="center" valign="middle" style="width:42px; height:42px; border-radius:50%; background:#eef1f5;"><a href="https://www.facebook.com/laurentvalereimmobilier?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=footer-facebook" style="display:block; font-size:0; line-height:0;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/facebook.svg" width="18" height="18" alt="facebook" style="width:18px; height:18px; display:block; opacity:0.55; border:0;"></a></td></tr></table></td>
+          <td style="padding:0 7px;"><table role="presentation" width="42" height="42" cellspacing="0" cellpadding="0"><tr><td width="42" height="42" align="center" valign="middle" style="width:42px; height:42px; border-radius:50%; background:#eef1f5;"><a href="https://www.linkedin.com/company/105845668/?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=footer-linkedin" style="display:block; font-size:0; line-height:0;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/linkedin.svg" width="18" height="18" alt="linkedin" style="width:18px; height:18px; display:block; opacity:0.55; border:0;"></a></td></tr></table></td>
+          <td style="padding:0 7px;"><table role="presentation" width="42" height="42" cellspacing="0" cellpadding="0"><tr><td width="42" height="42" align="center" valign="middle" style="width:42px; height:42px; border-radius:50%; background:#eef1f5;"><a href="https://www.youtube.com/@cabinetlaurentvalere?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=footer-youtube" style="display:block; font-size:0; line-height:0;"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/youtube.svg" width="18" height="18" alt="youtube" style="width:18px; height:18px; display:block; opacity:0.55; border:0;"></a></td></tr></table></td>
+        </tr></table>
+        <p style="font-size:15px; font-weight:800; color:#1a1a2e; margin:0 0 4px;">Cabinet Laurent Valère</p>
+        <p style="font-size:13px; color:#0d9488; margin:0 0 18px; font-weight:600;">Agence immobilière familiale en Martinique depuis 1985</p>
+        <p style="font-size:12px; color:#a0a7b4; margin:0 0 10px;">
+          <a href="https://www.cabinetlaurentvalere.com?utm_source=newsletter&utm_medium=email&utm_campaign={{ campaign }}&utm_content=footer-site" style="color:#a0a7b4;">Site web</a>&nbsp;|&nbsp;
+          <a href="mailto:contact@cabinetlaurentvalere.com" style="color:#a0a7b4;">Contact</a>
+        </p>
+        <p style="font-size:11px; color:#c0c6d0; margin:0 0 8px;">© {{ year }} Cabinet Laurent Valère. Tous droits réservés.</p>
+        <p style="font-size:11px; color:#c0c6d0; margin:0 0 3px;">Carte Professionnelle n° CPI 9721 2019 000 039 555 — CCI de la Martinique</p>
+        <p style="font-size:11px; color:#c0c6d0; margin:0;">Membre du Syndicat National des Professionnels Immobiliers · Assurance VHS · Garantie QBE</p>
+      </div>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
 </body>
 </html>
